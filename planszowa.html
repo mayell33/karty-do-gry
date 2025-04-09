@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senhotep: Egipska Gra Zadaniowa</title>
+    <style>
+        body {
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            text-shadow: 3px 3px 6px #000;
+            margin-bottom: 1.5rem;
+            color: #f5d742;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 2rem;
+            color: #f5d742;
+            font-style: italic;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin: 2rem auto;
+            width: 320px;
+            height: 450px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: all 0.8s ease;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            animation: flyIn 1.2s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-100vw) rotateY(120deg);
+            background: linear-gradient(135deg, #f5d742 0%, #e6a32d 100%);
+        }
+
+        @keyframes flyIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-100vw) rotateY(120deg);
+            }
+            70% {
+                opacity: 0.9;
+                transform: translateX(20px) rotateY(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) rotateY(0);
+            }
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f5d742 0%, #e6a32d 100%);
+            transform: rotateY(0deg);
+            border: 8px solid #8b4513;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #e6a32d 0%, #d4820e 100%);
+            transform: rotateY(180deg);
+            border: 8px solid #5a2c02;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .task {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #3a2a0f;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
+        .hieroglyph {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        button {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: 3px solid #5a2c02;
+        }
+
+        button:hover {
+            background-color: #a0522d;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+
+        .sand {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent 0%, #e6a32d 100%);
+            z-index: -1;
+        }
+
+        .pyramid-decoration {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="sand"></div>
+    <div class="pyramid-decoration">𓃭𓃭𓃭</div>
+    
+    <div class="container">
+        <h1>SENHOTEP</h1>
+        <div class="subtitle">Egipska Gra Zadaniowa</div>
+        
+        <div class="card-container">
+            <div class="card" id="card">
+                <div class="card-face card-front">
+                    <div class="hieroglyph">𓃭</div>
+                    <div class="task" id="task">Kliknij przycisk, aby wylosować wyzwanie faraona</div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="hieroglyph">𓁹</div>
+                    <div class="task">SENHOTEP<br>𓋹𓍑𓋴</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="drawButton">LOSUJ WYZWANIE</button>
+    </div>
+
+    <script>
+        const tasks = [
+            "Przedstaw scenę polowania w stylu egipskich malowideł ściennych",
+            "Wymień 3 bogów egipskich i opisz ich atrybuty",
+            "Opowiedz legendę o Ozyrysie i Izydzie w 30 sekund",
+            "Narysuj w powietrzu hieroglif przedstawiający słońce (☉)",
+            "Wymyśl zaklęcie, które mogło być używane w starożytnym Egipcie",
+            "Przedstaw proces mumifikacji w 4 dramatycznych krokach",
+            "Opisz jak wyglądałby twój grobowiec gdybyś był faraonem",
+            "Wymień 3 wynalazki starożytnych Egipcjan i ich znaczenie",
+            "Przedstaw taniec rytualny ku czci bogini Hathor",
+            "Opowiedz jak wyglądała typowa uczta u faraona",
+            "Zbuduj miniaturową piramidę z dostępnych przedmiotów",
+            "Przedstaw sfinksa w formie żywej rzeźby",
+            "Wymyśl przekleństwo, które mogłoby znaleźć się w grobowcu",
+            "Opisz podróż duszy przez zaświaty według Egipcjan",
+            "Przedstaw kapłana odprawiającego rytuał"
+        ];
+
+        const hieroglyphs = ["𓀀", "𓀁", "𓀂", "𓀃", "𓀄", "𓀅", "𓀆", "𓀇", "𓀈", "𓀉", "𓀊", "𓀋", "𓀌", "𓀍", "𓀎", "𓀏", "𓃭", "𓁹", "𓂀", "𓃒", "𓃻", "𓄿", "𓅓", "𓆣"];
+
+        const card = document.getElementById('card');
+        const taskElement = document.getElementById('task');
+        const drawButton = document.getElementById('drawButton');
+
+        drawButton.addEventListener('click', () => {
+            // Reset animation
+            card.style.animation = 'none';
+            card.offsetHeight; // Trigger reflow
+            card.style.animation = 'flyIn 1.2s ease-out forwards';
+            
+            // Flip card back first
+            card.classList.remove('flipped');
+            
+            setTimeout(() => {
+                // Draw random task and hieroglyph
+                const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
+                const randomHieroglyph = hieroglyphs[Math.floor(Math.random() * hieroglyphs.length)];
+                
+                taskElement.textContent = randomTask;
+                document.querySelector('.card-front .hieroglyph').textContent = randomHieroglyph;
+                
+                // Flip card after a short delay
+                setTimeout(() => {
+                    card.classList.add('flipped');
+                }, 600);
+            }, 600);
+        });
+    </script>
+</body>
+</html>

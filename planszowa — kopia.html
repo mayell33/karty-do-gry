@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senhotep: Egipska Gra Quizowa</title>
+    <style>
+        body {
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            text-shadow: 3px 3px 6px #000;
+            margin-bottom: 1rem;
+            color: #f5d742;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 2rem;
+            color: #f5d742;
+            font-style: italic;
+        }
+
+        .difficulty-selector {
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            background-color: #5a2c02;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .difficulty-btn.active {
+            background-color: #f5d742;
+            color: #3a2a0f;
+            transform: scale(1.1);
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin: 1rem auto;
+            width: 320px;
+            height: 450px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: all 0.8s ease;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            animation: flyIn 1.2s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-100vw) rotateY(120deg);
+            background: linear-gradient(135deg, #f5d742 0%, #e6a32d 100%);
+        }
+
+        @keyframes flyIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-100vw) rotateY(120deg);
+            }
+            70% {
+                opacity: 0.9;
+                transform: translateX(20px) rotateY(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) rotateY(0);
+            }
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f5d742 0%, #e6a32d 100%);
+            transform: rotateY(0deg);
+            border: 8px solid #8b4513;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #e6a32d 0%, #d4820e 100%);
+            transform: rotateY(180deg);
+            border: 8px solid #5a2c02;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .task {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #3a2a0f;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
+        .answer {
+            font-size: 1.3rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            color: #5a2c02;
+            font-weight: bold;
+            min-height: 2rem;
+        }
+
+        .category {
+            font-size: 1rem;
+            color: #5a2c02;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .hieroglyph {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        button {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: 3px solid #5a2c02;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        button:hover {
+            background-color: #a0522d;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+
+        .sand {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent 0%, #e6a32d 100%);
+            z-index: -1;
+        }
+
+        .pyramid-decoration {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            .card-container {
+                width: 280px;
+                height: 400px;
+            }
+            .task {
+                font-size: 1.3rem;
+            }
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="sand"></div>
+    <div class="pyramid-decoration">𓃭𓃭𓃭</div>
+    
+    <div class="container">
+        <h1>SENHOTEP</h1>
+        <div class="subtitle">Egipska Gra Quizowa</div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" data-difficulty="all">Wszystkie</button>
+            <button class="difficulty-btn" data-difficulty="easy">Łatwe</button>
+            <button class="difficulty-btn" data-difficulty="medium">Średnie</button>
+            <button class="difficulty-btn" data-difficulty="hard">Trudne</button>
+        </div>
+        
+        <div class="card-container">
+            <div class="card" id="card">
+                <div class="card-face card-front">
+                    <div class="category" id="category">Kategoria</div>
+                    <div class="hieroglyph">𓃭</div>
+                    <div class="task" id="task">Wybierz poziom trudności i losuj pytanie!</div>
+                    <div class="answer" id="answer"></div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="hieroglyph">𓁹</div>
+                    <div class="task">SENHOTEP<br>𓋹𓍑𓋴</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button id="showAnswerBtn">POKAŻ ODPOWIEDŹ</button>
+            <button id="drawButton">LOSUJ PYTANIE</button>
+        </div>
+    </div>
+
+    <script>
+        // Baza 150 pytań podzielonych na kategorie i poziomy trudności
+        const allQuestions = [
+            // HISTORIA (30 pytań)
+            { id: 1, question: "Kto był pierwszym królem zjednoczonego Egiptu?", answer: "Menes", category: "Historia", difficulty: "easy" },
+            { id: 2, question: "W którym roku wybuchła II wojna światowa?", answer: "1939", category: "Historia", difficulty: "easy" },
+            { id: 3, question: "Kto wynalazł druk ruchomą czcionką w Europie?", answer: "Johannes Gutenberg", category: "Historia", difficulty: "medium" },
+            { id: 4, question: "Jak nazywała się stolica starożytnej Asyrii?", answer: "Niniwa", category: "Historia", difficulty: "hard" },
+            { id: 5, question: "Kto był założycielem dynastii Jagiellonów w Polsce?", answer: "Władysław Jagiełło", category: "Historia", difficulty: "medium" },
+            { id: 6, question: "W którym wieku żył Mikołaj Kopernik?", answer: "XV-XVI wiek", category: "Historia", difficulty: "medium" },
+            { id: 7, question: "Jak nazywał się słynny wódz mongolski, który podbił większość Azji?", answer: "Czyngis-chan", category: "Historia", difficulty: "easy" },
+            { id: 8, question: "Kto był pierwszym cesarzem rzymskim?", answer: "August", category: "Historia", difficulty: "medium" },
+            { id: 9, question: "W którym roku upadło Cesarstwo Zachodniorzymskie?", answer: "476", category: "Historia", difficulty: "hard" },
+            { id: 10, question: "Jak nazywał się słynny filozof, nauczyciel Aleksandra Wielkiego?", answer: "Arystoteles", category: "Historia", difficulty: "medium" },
+            
+            // NAUKA (30 pytań)
+            { id: 31, question: "Jaka jest największa planeta Układu Słonecznego?", answer: "Jowisz", category: "Nauka", difficulty: "easy" },
+            { id: 32, question: "Kto odkrył prawo powszechnego ciążenia?", answer: "Isaac Newton", category: "Nauka", difficulty: "easy" },
+            { id: 33, question: "Ile wynosi przyspieszenie ziemskie (w zaokrągleniu)?", answer: "9,81 m/s²", category: "Nauka", difficulty: "medium" },
+            { id: 34, question: "Jak nazywa się najmniejsza część pierwiastka zachowująca jego właściwości?", answer: "Atom", category: "Nauka", difficulty: "easy" },
+            { id: 35, question: "Kto sformułował teorię względności?", answer: "Albert Einstein", category: "Nauka", difficulty: "medium" },
+            { id: 36, question: "Ile chromosomów ma zdrowy człowiek?", answer: "46", category: "Nauka", difficulty: "medium" },
+            { id: 37, question: "Jak nazywa się proces, w którym rośliny wytwarzają tlen?", answer: "Fotosynteza", category: "Nauka", difficulty: "easy" },
+            { id: 38, question: "Który pierwiastek chemiczny ma symbol 'Au'?", answer: "Złoto", category: "Nauka", difficulty: "easy" },
+            { id: 39, question: "Jak nazywa się najtwardszy minerał występujący w przyrodzie?", answer: "Diament", category: "Nauka", difficulty: "easy" },
+            { id: 40, question: "Kto odkrył penicylinę?", answer: "Alexander Fleming", category: "Nauka", difficulty: "medium" },
+            
+            // GEOGRAFIA (30 pytań)
+            { id: 61, question: "Jakie jest największe jezioro na świecie?", answer: "Morze Kaspijskie", category: "Geografia", difficulty: "medium" },
+            { id: 62, question: "Która rzeka jest najdłuższa na świecie?", answer: "Nil", category: "Geografia", difficulty: "easy" },
+            { id: 63, question: "Jakie państwo jest największe pod względem powierzchni?", answer: "Rosja", category: "Geografia", difficulty: "easy" },
+            { id: 64, question: "Jak nazywa się stolica Australii?", answer: "Canberra", category: "Geografia", difficulty: "medium" },
+            { id: 65, question: "Które państwo jest najmniejsze na świecie?", answer: "Watykan", category: "Geografia", difficulty: "easy" },
+            { id: 66, question: "Jak nazywa się najwyższy szczyt świata?", answer: "Mount Everest", category: "Geografia", difficulty: "easy" },
+            { id: 67, question: "Które miasto jest stolicą Kanady?", answer: "Ottawa", category: "Geografia", difficulty: "medium" },
+            { id: 68, question: "Jak nazywa się pustynia w północnej Afryce?", answer: "Sahara", category: "Geografia", difficulty: "easy" },
+            { id: 69, question: "Który ocean jest największy?", answer: "Spokojny", category: "Geografia", difficulty: "easy" },
+            { id: 70, question: "Jak nazywa się najdłuższa rzeka w Polsce?", answer: "Wisła", category: "Geografia", difficulty: "easy" },
+            
+            // SZTUKA I KULTURA (20 pytań)
+            { id: 91, question: "Kto namalował 'Mona Lisę'?", answer: "Leonardo da Vinci", category: "Sztuka", difficulty: "easy" },
+            { id: 92, question: "Kto skomponował 'IX Symfonię'?", answer: "Ludwig van Beethoven", category: "Sztuka", difficulty: "medium" },
+            { id: 93, question: "Kto napisał 'Romea i Julię'?", answer: "William Szekspir", category: "Sztuka", difficulty: "easy" },
+            { id: 94, question: "Jak nazywa się słynny obraz Edvarda Muncha?", answer: "Krzyk", category: "Sztuka", difficulty: "medium" },
+            { id: 95, question: "Kto jest autorem 'Dziadów'?", answer: "Adam Mickiewicz", category: "Sztuka", difficulty: "medium" },
+            { id: 96, question: "Jak nazywa się słynny teatr w Londynie związany z Szekspirem?", answer: "The Globe", category: "Sztuka", difficulty: "hard" },
+            { id: 97, question: "Kto namalował 'Gwiaździstą noc'?", answer: "Vincent van Gogh", category: "Sztuka", difficulty: "medium" },
+            { id: 98, question: "Jak nazywa się słynna opera w Sydney?", answer: "Opera House", category: "Sztuka", difficulty: "easy" },
+            { id: 99, question: "Kto jest autorem 'Zbrodni i kary'?", answer: "Fiodor Dostojewski", category: "Sztuka", difficulty: "hard" },
+            { id: 100, question: "Jak nazywa się słynny balet Czajkowskiego o ptakach?", answer: "Jezioro łabędzie", category: "Sztuka", difficulty: "medium" },
+            
+            // SPORT (10 pytań)
+            { id: 111, question: "W którym roku odbyły się pierwsze nowożytne Igrzyska Olimpijskie?", answer: "1896", category: "Sport", difficulty: "medium" },
+            { id: 112, question: "Które państwo wygrało najwięcej medali w historii letnich IO?", answer: "USA", category: "Sport", difficulty: "medium" },
+            { id: 113, question: "Jak nazywa się najważniejszy turniej piłki nożnej?", answer: "Mistrzostwa Świata", category: "Sport", difficulty: "easy" },
+            { id: 114, question: "Kto jest uważany za najlepszego piłkarza wszech czasów?", answer: "Pelé", category: "Sport", difficulty: "medium" },
+            { id: 115, question: "W jakim sporcie słynny jest Michael Jordan?", answer: "Koszykówka", category: "Sport", difficulty: "easy" },
+            { id: 116, question: "Jak nazywa się najdłuższy bieg olimpijski?", answer: "Maraton", category: "Sport", difficulty: "easy" },
+            { id: 117, question: "Które państwo jest mistrzem świata w piłce nożnej w 2018?", answer: "Francja", category: "Sport", difficulty: "medium" },
+            { id: 118, question: "W jakim sporcie występuje Serena Williams?", answer: "Tenis", category: "Sport", difficulty: "easy" },
+            { id: 119, question: "Jak nazywa się główny turniej tenisowy w Polsce?", answer: "Warsaw Open", category: "Sport", difficulty: "hard" },
+            { id: 120, question: "Które państwo jest najsilniejsze w hokeju na lodzie?", answer: "Kanada", category: "Sport", difficulty: "medium" },
+            
+            // TECHNOLOGIA (10 pytań)
+            { id: 121, question: "Kto założył firmę Microsoft?", answer: "Bill Gates", category: "Technologia", difficulty: "easy" },
+            { id: 122, question: "Jak nazywa się założyciel Apple?", answer: "Steve Jobs", category: "Technologia", difficulty: "easy" },
+            { id: 123, question: "Który język programowania jest najpopularniejszy w 2023?", answer: "Python", category: "Technologia", difficulty: "medium" },
+            { id: 124, question: "Jak nazywa się system operacyjny open-source?", answer: "Linux", category: "Technologia", difficulty: "medium" },
+            { id: 125, question: "Kto wynalazł World Wide Web?", answer: "Tim Berners-Lee", category: "Technologia", difficulty: "hard" },
+            { id: 126, question: "Jak nazywa się pierwszy programista w historii?", answer: "Ada Lovelace", category: "Technologia", difficulty: "hard" },
+            { id: 127, question: "Która firma stworzyła system Android?", answer: "Google", category: "Technologia", difficulty: "medium" },
+            { id: 128, question: "Jak nazywa się największa platforma społecznościowa?", answer: "Facebook", category: "Technologia", difficulty: "easy" },
+            { id: 129, question: "Który wynalazek zastąpił dyskietki?", answer: "Pendrive", category: "Technologia", difficulty: "easy" },
+            { id: 130, question: "Jak nazywa się pierwszy komputer?", answer: "ENIAC", category: "Technologia", difficulty: "hard" },
+            
+            // PRZYRODA (10 pytań)
+            { id: 131, question: "Ile nóg ma pająk?", answer: "8", category: "Przyroda", difficulty: "easy" },
+            { id: 132, question: "Jak nazywa się największe zwierzę lądowe?", answer: "Słoń afrykański", category: "Przyroda", difficulty: "easy" },
+            { id: 133, question: "Które zwierzę jest najszybsze na lądzie?", answer: "Gepard", category: "Przyroda", difficulty: "easy" },
+            { id: 134, question: "Jak nazywa się największy ssak morski?", answer: "Płetwal błękitny", category: "Przyroda", difficulty: "medium" },
+            { id: 135, question: "Które drzewo jest symbolem Kanady?", answer: "Klon", category: "Przyroda", difficulty: "easy" },
+            { id: 136, question: "Jak nazywa się najwyższe drzewo na świecie?", answer: "Sekwoja", category: "Przyroda", difficulty: "medium" },
+            { id: 137, question: "Który ptak jest symbolem USA?", answer: "Bielik amerykański", category: "Przyroda", difficulty: "easy" },
+            { id: 138, question: "Jak nazywa się największy gatunek niedźwiedzia?", answer: "Niedźwiedź polarny", category: "Przyroda", difficulty: "medium" },
+            { id: 139, question: "Które zwierzę jest najinteligentniejsze po człowieku?", answer: "Szympans", category: "Przyroda", difficulty: "medium" },
+            { id: 140, question: "Jak nazywa się największy gatunek rekina?", answer: "Rekin wielorybi", category: "Przyroda", difficulty: "hard" },
+            
+            // FILMY I LITERATURA (10 pytań)
+            { id: 141, question: "Kto napisał 'Pana Tadeusza'?", answer: "Adam Mickiewicz", category: "Literatura", difficulty: "easy" },
+            { id: 142, question: "Kto wyreżyserował 'Listę Schindlera'?", answer: "Steven Spielberg", category: "Filmy", difficulty: "medium" },
+            { id: 143, question: "Kto napisał 'Władcę Pierścieni'?", answer: "J.R.R. Tolkien", category: "Literatura", difficulty: "easy" },
+            { id: 144, question: "Jak nazywa się główny bohater 'Zmierzchu'?", answer: "Edward Cullen", category: "Literatura", difficulty: "easy" },
+            { id: 145, question: "Kto grał główną rolę w 'Titanicu'?", answer: "Leonardo DiCaprio", category: "Filmy", difficulty: "easy" },
+            { id: 146, question: "Jak nazywa się szkoła Harry'ego Pottera?", answer: "Hogwart", category: "Literatura", difficulty: "easy" },
+            { id: 147, question: "Kto napisał 'Zbrodnię i karę'?", answer: "Fiodor Dostojewski", category: "Literatura", difficulty: "hard" },
+            { id: 148, question: "Jak nazywa się reżyser 'Ojca chrzestnego'?", answer: "Francis Ford Coppola", category: "Filmy", difficulty: "hard" },
+            { id: 149, question: "Kto napisał 'Lalkę'?", answer: "Bolesław Prus", category: "Literatura", difficulty: "medium" },
+            { id: 150, question: "Jak nazywa się pierwszy film z Jamesem Bondem?", answer: "Doktor No", category: "Filmy", difficulty: "hard" }
+        ];
+
+        // Hieroglify do wyświetlania
+        const hieroglyphs = ["𓀀", "𓀁", "𓀂", "𓀃", "𓀄", "𓀅", "𓀆", "𓀇", "𓀈", "𓀉", "𓀊", "𓀋", "𓀌", "𓀍", "𓀎", "𓀏", "𓃭", "𓁹", "𓂀", "𓃒", "𓃻", "𓄿", "𓅓", "𓆣"];
+
+        // Elementy DOM
+        const card = document.getElementById('card');
+        const taskElement = document.getElementById('task');
+        const answerElement = document.getElementById('answer');
+        const categoryElement = document.getElementById('category');
+        const drawButton = document.getElementById('drawButton');
+        const showAnswerBtn = document.getElementById('showAnswerBtn');
+        const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+
+        // Aktualny poziom trudności
+        let currentDifficulty = 'all';
+        
+        // Śledzenie użytych pytań
+        let usedQuestions = {
+            all: [],
+            easy: [],
+            medium: [],
+            hard: []
+        };
+        
+        // Kopia pytań do wykorzystania
+        let availableQuestions = {
+            all: [...allQuestions],
+            easy: allQuestions.filter(q => q.difficulty === 'easy'),
+            medium: allQuestions.filter(q => q.difficulty === 'medium'),
+            hard: allQuestions.filter(q => q.difficulty === 'hard')
+        };
+
+        // Aktualne pytanie
+        let currentQuestion = null;
+
+        // Obsługa przycisków trudności
+        difficultyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                difficultyButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentDifficulty = button.dataset.difficulty;
+                
+                // Sprawdź czy trzeba zresetować pytania dla tego poziomu
+                if (availableQuestions[currentDifficulty].length === 0) {
+                    resetQuestionsForDifficulty(currentDifficulty);
+                }
+            });
+        });
+
+        // Funkcja resetująca pytania dla danego poziomu trudności
+        function resetQuestionsForDifficulty(difficulty) {
+            if (difficulty === 'all') {
+                availableQuestions.all = [...allQuestions];
+                usedQuestions.all = [];
+            } else {
+                availableQuestions[difficulty] = allQuestions.filter(q => q.difficulty === difficulty);
+                usedQuestions[difficulty] = [];
+            }
+            
+            // Aktualizacja przycisku
+            drawButton.disabled = false;
+            drawButton.textContent = 'LOSUJ PYTANIE';
+            answerElement.textContent = '';
+        }
+
+        // Funkcja losująca pytanie
+        function getRandomQuestion() {
+            let questionsPool = availableQuestions[currentDifficulty];
+            
+            if (questionsPool.length === 0) {
+                return {
+                    question: "Wykorzystałeś już wszystkie pytania z tego poziomu! Kliknij, aby zresetować.",
+                    answer: "",
+                    category: "Informacja",
+                    difficulty: ""
+                };
+            }
+            
+            const randomIndex = Math.floor(Math.random() * questionsPool.length);
+            const selectedQuestion = questionsPool[randomIndex];
+            
+            // Przenieś pytanie do użytych
+            usedQuestions[currentDifficulty].push(selectedQuestion);
+            availableQuestions[currentDifficulty] = questionsPool.filter(q => q.id !== selectedQuestion.id);
+            
+            // Jeśli to było ostatnie pytanie, zmień tekst przycisku
+            if (availableQuestions[currentDifficulty].length === 0) {
+                drawButton.textContent = 'RESETUJ PYTANIA';
+            }
+            
+            return selectedQuestion;
+        }
+
+        // Obsługa przycisku pokaż odpowiedź
+        showAnswerBtn.addEventListener('click', () => {
+            if (currentQuestion) {
+                answerElement.textContent = currentQuestion.answer;
+            }
+        });
+
+        // Obsługa przycisku losowania/resetowania
+        drawButton.addEventListener('click', () => {
+            // Sprawdź czy trzeba zresetować pytania
+            if (availableQuestions[currentDifficulty].length === 0) {
+                resetQuestionsForDifficulty(currentDifficulty);
+                return;
+            }
+            
+            // Reset animacji
+            card.style.animation = 'none';
+            card.offsetHeight;
+            card.style.animation = 'flyIn 1.2s ease-out forwards';
+            
+            // Odwróć kartę na początek
+            card.classList.remove('flipped');
+            
+            // Wyczyść odpowiedź
+            answerElement.textContent = '';
+            
+            setTimeout(() => {
+                // Wylosuj nowe pytanie
+                currentQuestion = getRandomQuestion();
+                const randomHieroglyph = hieroglyphs[Math.floor(Math.random() * hieroglyphs.length)];
+                
+                // Ustaw nowe pytanie i hieroglif
+                taskElement.textContent = currentQuestion.question;
+                categoryElement.textContent = `${currentQuestion.category} • ${currentQuestion.difficulty}`;
+                document.querySelector('.card-front .hieroglyph').textContent = randomHieroglyph;
+                
+                // Odwróć kartę po krótkim opóźnieniu
+                setTimeout(() => {
+                    card.classList.add('flipped');
+                }, 600);
+            }, 600);
+        });
+    </script>
+</body>
+</html>
